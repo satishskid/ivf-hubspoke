@@ -1,0 +1,41 @@
+{
+  "name": "fertility-ai-system",
+  "version": "1.0.0",
+  "description": "AI-assisted fertility clinic management system for rural India",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [
+    "fertility",
+    "ai",
+    "healthcare",
+    "rural",
+    "india"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.936.0",
+    "@clerk/nextjs": "^6.35.2",
+    "@google/generative-ai": "^0.24.1",
+    "@prisma/client": "^7.0.0",
+    "groq-sdk": "^0.36.0",
+    "next": "^16.0.3",
+    "prisma": "^7.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "svix": "^1.81.0",
+    "wrangler": "^4.49.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.6",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.9.3"
+  }
+}

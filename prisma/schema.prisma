@@ -1,0 +1,166 @@
+// Core Models
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Clinic {
+  id            String   @id @default(cuid())
+  name          String
+  type          ClinicType // LEVEL1, LEVEL2
+  location      String
+  hubClinicId   String?  // If Level 1, references parent hub
+  hubClinic     Clinic?  @relation("HubSpoke", fields: [hubClinicId], references: [id])
+  spokeClinics  Clinic[] @relation("HubSpoke")
+  aiProvider    String   // GEMINI, GROQ
+  aiApiKey      String   @db.Text // Will be encrypted in application code
+  patients      Patient[]
+  staff         Staff[]
+  consultations Consultation[]
+  
+  @@index([hubClinicId])
+}
+
+enum ClinicType {
+  LEVEL1
+  LEVEL2
+}
+
+model Patient {
+  id              String   @id @default(cuid())
+  clinicId        String
+  clinic          Clinic   @relation(fields: [clinicId], references: [id])
+  mrn             String   @unique // Medical Record Number
+  name            String
+  age             Int
+  phone           String
+  location        String
+  medicalHistory  Json     // Structured medical history
+  consultations   Consultation[]
+  investigations  Investigation[]
+  timeline        PatientTimeline[]
+  
+  @@index([clinicId])
+}
+
+model Staff {
+  id              String   @id @default(cuid())
+  clinicId        String
+  clinic          Clinic   @relation(fields: [clinicId], references: [id])
+  name            String
+  role            String
+  email           String   @unique
+  passwordHash    String   @db.Text
+  consultations   Consultation[]
+  reviewedConsultations Consultation[] @relation("ConsultationReviewer")
+  sentMessages    Message[] @relation("MessageSender")
+  
+  @@index([clinicId])
+}
+
+model Consultation {
+  id                String   @id @default(cuid())
+  patientId         String
+  patient           Patient  @relation(fields: [patientId], references: [id])
+  clinicId          String
+  clinic            Clinic   @relation(fields: [clinicId], references: [id])
+  staffId           String
+  staff             Staff    @relation(fields: [staffId], references: [id])
+  
+  // AI-Assisted Data Collection
+  chiefComplaint    String
+  historyPresent    Json     // Structured: duration, severity, associated symptoms
+  menstrualHistory  Json     // Cycle details, LMP, regularity
+  obstetricHistory  Json     // Gravida, Para, previous pregnancies
+  medicalHistory    Json     // Comorbidities, medications, allergies
+  familyHistory     Json
+  socialHistory     Json
+  
+  // AI-Generated Outputs
+  patientProfile    Json     // AI-synthesized patient summary
+  differentialDx    Json     // Ranked differential diagnoses
+  investigationPlan Json     // Ordered tests with reasoning
+  treatmentPlan     Json     // Stepped treatment recommendations
+  prognosis         Json     // Predictions with confidence intervals
+  
+  // Hub-Spoke Workflow
+  status            ConsultStatus // DRAFT, PENDING_HUB_REVIEW, APPROVED, IN_TREATMENT
+  reviewerId        String?  // Level 2 specialist
+  reviewer          Staff?   @relation("ConsultationReviewer", fields: [reviewerId], references: [id])
+  reviewerNotes     Json?
+  reviewedAt        DateTime?
+  
+  // Collaboration
+  messages          Message[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([patientId])
+  @@index([clinicId])
+  @@index([staffId])
+  @@index([reviewerId])
+  @@index([status])
+}
+
+enum ConsultStatus {
+  DRAFT
+  PENDING_HUB_REVIEW
+  APPROVED
+  IN_TREATMENT
+}
+
+model Investigation {
+  id              String   @id @default(cuid())
+  patientId       String
+  patient         Patient  @relation(fields: [patientId], references: [id])
+  type            InvestigationType // USG, HORMONE_PANEL, SEMEN_ANALYSIS, etc.
+  orderedAt       DateTime
+  completedAt     DateTime?
+  results         Json     // Structured results
+  images          String[] // URLs for USG images
+  aiInterpretation Json?  // AI analysis of results
+  status          String   // ORDERED, COMPLETED, REVIEWED
+  
+  @@index([patientId])
+  @@index([type])
+}
+
+enum InvestigationType {
+  USG
+  HORMONE_PANEL
+  SEMEN_ANALYSIS
+  OTHER
+}
+
+model Message {
+  id              String   @id @default(cuid())
+  consultationId  String
+  consultation    Consultation @relation(fields: [consultationId], references: [id])
+  senderId        String   // Staff ID
+  sender          Staff    @relation("MessageSender", fields: [senderId], references: [id])
+  senderType      String   // LEVEL1_STAFF, LEVEL2_SPECIALIST, AI_SYSTEM
+  content         String   @db.Text
+  metadata        Json?    // Attachments, references
+  createdAt       DateTime @default(now())
+  
+  @@index([consultationId])
+  @@index([senderId])
+}
+
+model PatientTimeline {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  eventType   String
+  description String   @db.Text
+  timestamp   DateTime @default(now())
+  metadata    Json?
+  
+  @@index([patientId])
+  @@index([timestamp])
+}
