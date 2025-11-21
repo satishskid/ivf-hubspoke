@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "includeFiles": [
+          ".env",
+          ".env.production"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/"
+    }
+  ],
+  "env": {
+    "DATABASE_URL": "postgresql://neondb_owner:npg_eRbY0lQkznx6@ep-frosty-river-a48njdab-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+    "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_Z2xvd2luZy1jcmFuZS04OS5jbGVyay5hY2NvdW50cy5kZXYk",
+    "CLERK_SECRET_KEY": "sk_test_eQaFALT4eWIzTleqP8zswltIqJAeiurCG4IynWxxYi",
+    "GROQ_API_KEY": "YOUR_GROQ_API_KEY",
+    "GEMINI_API_KEY": "YOUR_GEMINI_API_KEY",
+    "R2_ACCESS_KEY_ID": "e11a47074bc797ebc7785e75f6bdd046",
+    "R2_SECRET_ACCESS_KEY": "d862ad89d917fe83ec32e1b1a859bb44a9c90960da9981a377ade44a875ec4a2",
+    "R2_BUCKET_NAME": "YOUR_BUCKET_NAME",
+    "R2_ENDPOINT_URL": "https://9f4998a66a5d7bd7a230d0222544fbe6.r2.cloudflarestorage.com"
+  }
+}

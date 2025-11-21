@@ -5,16 +5,16 @@ import { useState, useEffect } from 'react'
 import FileUpload from '@/components/file-upload/FileUpload'
 
 export default function Dashboard() {
-  const { user, isLoaded } = useUser()
-  const { userId, isSignedIn } = useAuth()
+  // const { user, isLoaded } = useUser()
+  // const { userId, isSignedIn } = useAuth()
   const [clinics, setClinics] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (isSignedIn && userId) {
+    // if (isSignedIn && userId) {
       fetchClinics()
-    }
-  }, [isSignedIn, userId])
+    // }
+  }, [])
 
   const fetchClinics = async () => {
     try {
@@ -31,18 +31,18 @@ export default function Dashboard() {
     }
   }
 
-  if (!isLoaded) {
-    return <div>Loading...</div>
-  }
+  // if (!isLoaded) {
+  //   return <div>Loading...</div>
+  // }
 
-  if (!isSignedIn) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
-        <p className="mb-4">You must be signed in to view this page.</p>
-      </div>
-    )
-  }
+  // if (!isSignedIn) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center min-h-screen">
+  //       <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
+  //       <p className="mb-4">You must be signed in to view this page.</p>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -50,12 +50,16 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-900">Fertility Hub-Spoke AI System</h1>
           <div className="flex items-center space-x-4">
-            <span className="text-gray-700">Welcome, {user?.firstName || user?.emailAddresses[0].emailAddress}</span>
-            <SignOutButton>
+            {/* <span className="text-gray-700">Welcome, {user?.firstName || user?.emailAddresses[0].emailAddress}</span> */}
+            <span className="text-gray-700">Welcome, Test User</span>
+            {/* <SignOutButton>
               <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                 Sign Out
               </button>
-            </SignOutButton>
+            </SignOutButton> */}
+            <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+              Sign Out
+            </button>
           </div>
         </div>
       </header>
